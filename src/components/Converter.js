@@ -50,12 +50,16 @@ class Converter extends Component {
 
   render() {
       return(
-      <div style={{width:"50%", margin: "0 auto"}}>
-        <label className="uk-label">Binary : </label>
-        <input className="uk-input" type="text" maxLength="25" value={this.state.binary} onChange={this.binaryChange}/>
-        <br /><br />
-        <label className="uk-label">Decimal : </label>
-        <input className="uk-input" type="text" maxLength="8" value={this.state.decimal} onChange={this.decimalChange}/>
+      <div style={{width:"30%", margin: "0 auto"}} className="uk-card uk-card-body uk-card-default uk-position-center">
+        <h1 className="uk-card-title">Converter</h1>
+        <div className="uk-margin">
+          <input className="uk-input" type="text" maxLength="25" value={this.state.binary} onChange={this.binaryChange} placeholder="Binary"/>
+        </div>
+        <div className="uk-margin">
+          <input className="uk-input" type="text" maxLength="8" value={this.state.decimal} onChange={this.decimalChange} placeholder="Decimal"/>
+        </div>
+
+        <p className="uk-text-meta">by <a href="https://github.com/Marvin9" className="uk-text-success">mayursinh</a></p>
       </div>
     )
   }

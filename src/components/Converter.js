@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Error from './Error'
+import { binaryToDecimal, decimalToBinary, octalToDecimal, octalToBinary, binaryToOctal, decimalToOctal } from './convert'
 
 class Converter extends Component {
   constructor(props) {
@@ -7,19 +8,23 @@ class Converter extends Component {
     this.state = {
       binary : "",
       decimal : "",
+      octal : "",
       invalidBinary : "",
-      invalidDecimal : ""
+      invalidDecimal : "",
+      invalidoctal : ""
     }
 
     this.binaryChange = this.binaryChange.bind(this)
     this.decimalChange = this.decimalChange.bind(this)
     this.removeAllError = this.removeAllError.bind(this)
+    this.octalChange = this.octalChange.bind(this)
   }
 
   removeAllError() {
     this.setState({
       invalidBinary : "",
-      invalidDecimal : ""
+      invalidDecimal : "",
+      invalidoctal : ""
     })
   }
 
@@ -30,6 +35,11 @@ class Converter extends Component {
 
   decimalValidated(expression) {
     let exp = /[^0-9]+/
+    return !exp.test(expression)
+  }
+
+  octalValidated(expression) {
+    let exp = /[\D|8|9]+/
     return !exp.test(expression)
   }
 
@@ -50,17 +60,9 @@ class Converter extends Component {
         return;
       }
 
-      let startingPower = Math.pow(2,binary.length-1)
-      let binaryToDecimalAns = 0
-
-      binary.split('').map(bin => {
-        if(bin === "1")
-          binaryToDecimalAns += startingPower
-        startingPower /= 2
-      })
-
       this.setState({
-        decimal : binaryToDecimalAns,
+        decimal : binaryToDecimal(binary),
+        octal : binaryToOctal(binary),
         invalidBinary : ""
       })
 
@@ -86,22 +88,34 @@ class Converter extends Component {
         return
       }
 
-      let decimalToBinaryString = ""
-
-      decimal = +decimal
-      
-      while(decimal > 0) {
-        decimalToBinaryString += decimal % 2
-        decimal = Math.floor(decimal/2)
-      }
-
-      decimalToBinaryString = decimalToBinaryString.split('').reverse().join('')
-      
       this.setState({
-        binary : decimalToBinaryString,
+        binary : decimalToBinary(decimal),
+        octal : decimalToOctal(decimal),
         invalidDecimal : ""
       })
     
+    })
+  }
+
+
+  octalChange(event) {
+    this.setState({
+      octal : event.target.value
+    }, () => {
+      let { octal } = this.state;
+
+      if(!this.octalValidated(octal)) {
+        this.setState({
+          octal : "",
+          invalidoctal : "Invalid octal"
+        })
+        return;
+      }
+
+      this.setState({
+        binary : octalToBinary(octal),
+        decimal : octalToDecimal(octal)
+      })
     })
   }
 
@@ -109,7 +123,8 @@ class Converter extends Component {
       return(
       <div style={{margin: "0 auto"}} className="uk-card uk-card-body uk-card-secondary uk-card-large uk-position-center">
         <h1 className="uk-card-title uk-text-bold">Converter</h1>
-        <div className="uk-margin">
+        <div className="uk-margin" style={{textAlign:"left"}}>
+          <label>Binary : </label>
           <input className="uk-input uk-form-large" 
                  type="text" 
                  maxLength="25" 
@@ -122,7 +137,8 @@ class Converter extends Component {
           {/* <div className="uk-text-meta uk-text-danger" style={{textAlign : "left"}}>{ this.state.invalidBinary }</div> */}
           <Error invalid={this.state.invalidBinary}/>
         </div>
-        <div className="uk-margin">
+        <div className="uk-margin" style={{textAlign:"left"}}>
+          <label>Decimal : </label>
           <input className="uk-input uk-form-large" 
                  type="text" 
                  maxLength="8" 
@@ -133,7 +149,18 @@ class Converter extends Component {
             />
           <Error invalid={this.state.invalidDecimal}/>
         </div>
-
+        <div className="uk-margin" style={{textAlign : 'left'}}>
+          <label>Octal : </label>
+          <input className="uk-input uk-form-large" 
+                 type="text" 
+                 maxLength="8" 
+                 value={this.state.octal} 
+                 onChange={this.octalChange} 
+                 placeholder="Octal" 
+                 onBlur={this.removeAllError}
+            />
+          <Error invalid={this.state.invalidoctal}/>
+        </div>
         <p className="uk-text-meta">by <a href="https://github.com/Marvin9" className="uk-text-success">mayursinh</a></p>
       </div>
     )
